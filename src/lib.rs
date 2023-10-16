@@ -1,5 +1,5 @@
 //!
-// #![warn(missing_debug_implementations, rust_2018_idioms, missing_docs)]
+#![warn(missing_debug_implementations, rust_2018_idioms, missing_docs)]
 
 #[derive(Debug)]
 pub struct StrSplit<'haystack, 'delimiter> {
@@ -32,8 +32,17 @@ impl<'haystack, 'delimiter> Iterator for StrSplit<'haystack, 'delimiter> {
     }
 }
 
-fn until_char<'s>(s: &'s str, c: char) -> &'s str {
-    StrSplit::new(s, &format!("{}", c))
+/// Returns all characters on string up to the char informed
+///
+/// # Arguments
+///
+/// * `s` - A string to be handled
+/// * `c` - Character used as limit for the string to be returned 
+///
+/// # Examples
+pub fn until_char(s: &str, c: char) -> &'_ str {
+    let delim = format!("{}", c);
+    StrSplit::new(s, &delim)
         .next()
         .expect("StrSplit always gives at least one result")
 }
@@ -61,5 +70,5 @@ fn tail_test() {
 fn empty_test() {
     let haystack = "a b  c d ";
     let letters: Vec<_> = StrSplit::new(haystack, " ").collect();
-    assert_eq!(letters, vec!["a", "b", "",  "c", "d"]);
+    assert_eq!(letters, vec!["a", "b", "", "c", "d"]);
 }
