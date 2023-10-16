@@ -19,30 +19,40 @@ impl<'a> StrSplit<'a> {
 impl<'a> Iterator for StrSplit<'a> {
     type Item = &'a str;
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(ref mut remainder) = self.remainder {
-            if let Some(next_delim) = remainder.find(self.delimiter) {
-                let until_delimiter = &remainder[..next_delim];
-                *remainder = &remainder[(next_delim + self.delimiter.len())..];
-                Some(until_delimiter)
-            } else {
-                self.remainder.take()
-            }
+        let remainder = self.remainder.as_mut()?;
+        if let Some(next_delim) = remainder.find(self.delimiter) {
+            let until_delimiter = &remainder[..next_delim];
+            *remainder = &remainder[(next_delim + self.delimiter.len())..];
+            Some(until_delimiter)
+        } else if remainder.len() > 0 {
+            self.remainder.take()
         } else {
             None
         }
     }
 }
 
+// fn until_char<'s>(s: &'s str, c: char) -> &'s str {
+//     StrSplit::new(s, &format!("{}", c))
+//         .next()
+//         .expect("StrSplit always gives at least one result")
+// }
+
+// #[test]
+// fn until_char_test() {
+//     assert_eq!(until_char("hello world", 'o'), "hell")
+// }
+
 #[test]
-fn it_works() {
+fn split_test() {
     let haystack = "a b c d e";
-    let letters = StrSplit::new(haystack, " ");
-    assert!(letters.eq(vec!["a", "b", "c", "d", "e"].into_iter()));
+    let letters: Vec<_> = StrSplit::new(haystack, " ").collect();
+    assert_eq!(letters, vec!["a", "b", "c", "d", "e"]);
 }
 
 #[test]
-fn tail() {
-    let haystack = "a;b;c;d;";
-    let letters = StrSplit::new(haystack, ";");
-    assert!(letters.eq(vec!["a", "b", "c", "d"].into_iter()));
+fn tail_test() {
+    let haystack = "a b c d ";
+    let letters: Vec<_> = StrSplit::new(haystack, " ").collect();
+    assert_eq!(letters, vec!["a", "b", "c", "d"]);
 }
