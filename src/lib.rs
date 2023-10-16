@@ -56,3 +56,10 @@ fn tail_test() {
     let letters: Vec<_> = StrSplit::new(haystack, " ").collect();
     assert_eq!(letters, vec!["a", "b", "c", "d"]);
 }
+
+#[test]
+fn empty_test() {
+    let haystack = "a b  c d ";
+    let letters: Vec<_> = StrSplit::new(haystack, " ").collect();
+    assert_eq!(letters, vec!["a", "b", "",  "c", "d"]);
+}
